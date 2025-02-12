@@ -384,7 +384,7 @@ const ref2 = useRef<HTMLDivElement>(null)
 
 useEffect(() => {
   const diffRes = calcDiff({ data1, data2 });
-  applyDiff({ diffRes, ref1, ref2 });
+  applyDiff({ diffRes, domWrapper1:ref1.current, domWrapper2:ref2.current });
 }, [data1, data2]);
 
 return (

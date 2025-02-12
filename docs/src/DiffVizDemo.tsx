@@ -130,7 +130,7 @@ export default function DiffDemo(props: { isZh: boolean }) {
                 : "Disable DIFF"}
             </a>
             <a
-              href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffDemo.tsx"
+              href="https://github.com/LittleWhite-Hai/diff-viz/blob/diff-viz/docs/src/DiffVizDemo.tsx"
               target="_blank"
               style={{
                 color: "#7dba2f",

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 32 32">
+  <!-- <rect width="32" height="32" /> -->
+  
+  <!-- 左大括号 -->
+  <text x="1" y="24.2" font-family="monospace" font-size="26" fill="#333">{</text>
+  
+  <!-- 右大括号 -->
+  <text x="21" y="24.2" font-family="monospace" font-size="26" fill="#333">}</text>
+  
+  <!-- 绿色加号 -->
+  <line x1="14" y1="12" x2="22" y2="12" stroke="#4CAF50" stroke-width="2"/>
+  <line x1="18" y1="8" x2="18" y2="16" stroke="#4CAF50" stroke-width="2"/>
+  
+  <!-- 红色减号 -->
+  <line x1="14" y1="21" x2="22" y2="21" stroke="#F44336" stroke-width="2"/>
+</svg>

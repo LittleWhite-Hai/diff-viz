@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/form.tsx","./src/index.tsx"],"version":"5.6.3"}
+{"root":["./src/codeexample.tsx","./src/demo.tsx","./src/difffuncdemo.tsx","./src/diffvizdemo.tsx","./src/fqa.tsx","./src/form.tsx","./src/index.tsx","./src/test.ts","./src/diff/apply-diff.ts","./src/diff/diff-algorithm.ts","./src/diff/index.ts","./src/diff/styles.ts","./src/diff/types.ts"],"version":"5.6.3"}

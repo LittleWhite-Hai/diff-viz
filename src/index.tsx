@@ -122,9 +122,64 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
     }),
     [data1, data2, type, fieldItem.path]
   );
+  const NullContent = useMemo(() => {
+    return (
+      <div style={{ display: "flex" }}>
+        <div
+          style={{
+            textAlign: "left",
+            color: "gray",
+            height: "min-content",
+            ...labelStyle,
+          }}
+        ></div>
+        <div
+          style={{
+            marginLeft: "10px",
+            minWidth: "30%",
+            ...contentStyle,
+          }}
+        >
+          <div
+            data-path={fieldItem.path}
+            style={{
+              textAlign: "left",
+              paddingRight: "4px",
+              borderRight: "4px solid transparent",
+              marginBottom: "15px",
+            }}
+          ></div>
+        </div>
+      </div>
+    );
+  }, [labelStyle, contentStyle, fieldItem.path]);
+
   const isHeader = !fieldItem.path && !fieldItem.content;
   if (fieldItem.visible === false) {
-    return null;
+    return <div data-path={fieldItem.path}></div>;
+  }
+  if (typeof fieldItem.visible === "function") {
+    const visibleRes = fieldItem.visible(
+      getValueByPath(data, ext.path),
+      data,
+      ext
+    );
+    const visibleRes1 = fieldItem.visible(
+      getValueByPath(data1, ext.path),
+      data1,
+      ext
+    );
+    const visibleRes2 = fieldItem.visible(
+      getValueByPath(data2, ext.path),
+      data2,
+      ext
+    );
+    if (!visibleRes1 && !visibleRes2) {
+      return <div data-path={fieldItem.path}></div>;
+    }
+    if (visibleRes === false) {
+      return NullContent;
+    }
   }
 
   return isHeader ? (
@@ -133,10 +188,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
       {getPathLabel(data, fieldItem.label, fieldItem.arrayKey, ext)}
     </div>
   ) : (
-    <div
-      // data-path={fieldItem.path}
-      style={{ display: "flex", marginBottom: "15px" }}
-    >
+    <div style={{ display: "flex" }}>
       <div
         style={{
           textAlign: "left",
@@ -155,6 +207,7 @@ function RenderFieldItem<T extends DataTypeBase>(props: {
             textAlign: "left",
             paddingRight: "4px",
             borderRight: "4px solid transparent",
+            marginBottom: "15px",
           }}
         >
           {getFieldContent(data, fieldItem.content, fieldItem.arrayKey, ext)}
@@ -350,6 +403,7 @@ export default function DiffViz<T extends DataTypeBase>(props: {
             })}
         </div>
       </div>
+      fesajkmlfsk
       <div
         style={{
           display: singleMode ? "none" : "",

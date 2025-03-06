@@ -403,7 +403,6 @@ export default function DiffViz<T extends DataTypeBase>(props: {
             })}
         </div>
       </div>
-      fesajkmlfsk
       <div
         style={{
           display: singleMode ? "none" : "",

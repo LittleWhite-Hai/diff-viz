@@ -6,7 +6,7 @@
     "diff",
     "visualization"
   ],
-  "version": "1.2.22",
+  "version": "1.2.23",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "diff-viz": "^1.2.23"
+    "diff-viz": "^1.2.25"
   },
   "peerDependencies": {
     "lodash": "^4.17.21 || ^4.17.11 || ^3.10.1",

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       diff-viz:
-        specifier: ^1.2.25
-        version: 1.2.25(lodash@4.17.21)
+        specifier: ^1.2.26
+        version: 1.2.26(lodash@4.17.21)
       lodash:
         specifier: ^4.17.21 || ^4.17.11 || ^3.10.1
         version: 4.17.21
@@ -640,8 +640,8 @@ packages:
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
 
-  diff-viz@1.2.25:
-    resolution: {integrity: sha512-Haok1Yrmc/Q3wo0Y360UWUwWUI62hXMYmMEQ+aCLkPA/Mz4mzWRf0tkQg65chE2ItvSKWLXrox52GxUXy06XTw==}
+  diff-viz@1.2.26:
+    resolution: {integrity: sha512-zdABiKoRCzS8zhzCQtoRGVA5ThwrJSFIw0eqs/7bSbhqDEVm/DEfIOGcReCxbpL6BFOice7vv465pycsNoJFRw==}
     peerDependencies:
       lodash: ^4.17.21 || ^4.17.11 || ^3.10.1
 
@@ -1648,7 +1648,7 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  diff-viz@1.2.25(lodash@4.17.21):
+  diff-viz@1.2.26(lodash@4.17.21):
     dependencies:
       lodash: 4.17.21
 

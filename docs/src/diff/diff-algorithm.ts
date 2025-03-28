@@ -312,8 +312,34 @@ function innerAlignArray(props: {
         });
       }
 
-      data1[path] = alignedArr1;
-      data2[path] = alignedArr2;
+      // 只修改对象内的数组，不创建额外的路径
+      const pathParts = path.split('.');
+      let current1 = data1;
+      let i=0;
+      while (i < pathParts.length - 1) {
+        if (current1[pathParts[i]]) {
+          current1 = current1[pathParts[i]];
+          i++;
+        } else {
+          current1[pathParts[i]] = {};
+          break;
+        }
+      }
+      let current2 = data2;
+      let j=0;
+      while (j < pathParts.length - 1) {
+        if (current2[pathParts[j]]) {
+          current2 = current2[pathParts[j]];
+          j++;
+        } else {
+          current2[pathParts[j]] = {};
+          break;
+        }
+      }
+      
+      
+      current1[pathParts[i]] = alignedArr1;
+      current2[pathParts[j]] = alignedArr2;
     }
   });
 

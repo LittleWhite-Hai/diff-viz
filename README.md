@@ -1,6 +1,12 @@
 # <img src="./public/diff.ico" height="20" /> diff-viz
 
-render JSON differences + custom your styles
+![ts][ts-badge]
+![version][version-badge]
+[![download-badge]][download-link]
+![license][license-badge]
+[![官网](https://img.shields.io/badge/官网-example.com-red.svg)](https://littlewhite-hai.github.io/diff-viz/)
+
+render JSON differences and custom your styles
 
 ## Install
 
@@ -8,57 +14,18 @@ render JSON differences + custom your styles
 npm install diff-viz
 ```
 
-## Demo
+## Demo And Usage
 
-https://littlewhite-hai.github.io/diff-viz/
+**https://littlewhite-hai.github.io/diff-viz/**
 
 ![demo](./docs/public/demo.png)
 
-## Usage
-
-step 1
-
-```tsx
-import { calcDiff, applyDiff } from "diff-viz";
-const ref1 = useRef<HTMLDivElement>(null);
-const ref2 = useRef<HTMLDivElement>(null);
-
-useEffect(() => {
-  const diffRes = calcDiff({ data1, data2 });
-  applyDiff({ diffRes, ref1, ref2 });
-}, [data1, data2]);
-
-return (
-  <>
-    <div ref={ref1}>
-      <RenderData data={data1} /> {/* 你的业务代码,渲染数据1 */}
-    </div>
-    <div ref={ref2}>
-      <RenderData data={data2} /> {/* 你的业务代码,渲染数据2 */}
-    </div>
-  </>
-);
-```
-
-step 2
-
-```tsx
-// 假设<RenderData />是你的渲染数据的组件
-function RenderData(props) {
-  return (
-    <div>
-      ...
-      <div data-path="cardData">{RenderCard(props.data.cardData)}</div>
-      <div data-path="table.tableData">
-        {RenderTable(props.data.table.tableData)}
-      </div>
-      <div data-path="dateData">{RenderDate(props.data.dateData)}</div>
-      ...
-    </div>
-  );
-}
-```
-
 ## License
 
-MIT
+[MIT](/LICENSE)
+
+[ts-badge]: https://badgen.net/badge/-/TypeScript/blue?icon=typescript&label
+[download-badge]: https://img.shields.io/npm/dm/diff-viz
+[download-link]: https://www.npmjs.com/package/diff-viz
+[version-badge]: https://img.shields.io/npm/v/diff-viz
+[license-badge]: https://img.shields.io/github/license/Milkdown/milkdown

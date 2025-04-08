@@ -4,7 +4,7 @@
 ![version][version-badge]
 [![download-badge]][download-link]
 ![license][license-badge]
-[![官网](https://img.shields.io/badge/官网-example.com-red.svg)](https://littlewhite-hai.github.io/diff-viz/)
+[![官网](https://img.shields.io/badge/Demo-example.com-red.svg)](https://littlewhite-hai.github.io/diff-viz/)
 
 render JSON differences and custom your styles
 

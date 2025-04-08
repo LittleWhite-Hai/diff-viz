@@ -11,7 +11,8 @@ render JSON differences and custom your styles
 ## Install
 
 ```bash
-npm install diff-viz
+npm install react-diff-viz #react component, easy to start
+npm install diff-viz #two function, flexible and extendable
 ```
 
 ## Demo And Usage

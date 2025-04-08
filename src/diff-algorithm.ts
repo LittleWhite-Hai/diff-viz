@@ -531,83 +531,6 @@ export function alignDataArray<T = any>(props: {
 function isNullOrUndefined(value: any) {
   return value === null || value === undefined;
 }
-
-/**
- * 匹配函数，用于匹配带有通配符的模板字符串
- * @param templates 模板字符串数组，可能包含通配符 *
- * @param str 待匹配的字符串
- * @returns 匹配到的模板字符串，如果没有匹配则返回 undefined
- */
-function matchIsEqualKey(templates: string[], str: string): string | undefined {
-  // 将待匹配字符串按点分割
-  const strParts = str.split('.');
-  const matches:string[] = [];
-  
-  // 遍历所有模板
-  for (const template of templates) {
-    // 将模板按点分割
-    const templateParts = template.split('.');
-
-    // 如果模板和待匹配字符串完全相同，则返回模板
-    if(template===str){
-      return template;
-    }
-    
-    // 如果模板部分数量与待匹配字符串部分数量不同，且模板不包含通配符，则跳过
-    if (templateParts.length !== strParts.length && !template.includes('*')) {
-      continue;
-    }
-    
-    // 检查是否匹配
-    let isMatch = true;
-    
-    // 遍历模板的每一部分
-    for (let i = 0; i < Math.max(templateParts.length, strParts.length); i++) {
-      // 如果模板部分已经结束，但待匹配字符串还有部分，则不匹配
-      if (i >= templateParts.length) {
-        isMatch = false;
-        break;
-      }
-      
-      // 如果待匹配字符串部分已经结束，但模板还有部分，则不匹配
-      if (i >= strParts.length) {
-        isMatch = false;
-        break;
-      }
-      
-      // 如果模板部分是通配符，则匹配任何部分
-      if (templateParts[i] === '*') {
-        continue;
-      }
-      
-      // 如果模板部分与待匹配字符串部分不匹配，则不匹配
-      if (templateParts[i] !== strParts[i]) {
-        isMatch = false;
-        break;
-      }
-    }
-    
-    // 如果匹配，则返回模板
-    if (isMatch) {
-      matches.push(template);
-    }
-  }
-  if(matches.length>0){
-    // 返回*最少的一个
-    let minStarCount:number=Infinity;
-    let minStarCountTemplate:string='';
-    for(const template of matches){
-      const starCount=template.split('.').filter(part => part === '*').length;
-      if(starCount<minStarCount){
-        minStarCount=starCount;
-        minStarCountTemplate=template;  
-      }
-    }
-    return minStarCountTemplate;
-  }
-  return undefined
-} 
-
 /**
  * Compare two data objects and generate a difference result
  * @param data1 The first data object to compare
@@ -632,8 +555,6 @@ export function calcDiff(
     arrayObjectResult: arrayObjectResult2,
     mapObjectResult: mapObjectResult2,
   } = getObjectPathValueMap(data2);
-
-  const isEqualKeyArr=Object.keys(isEqualMap ?? {})
 
   // 对于arrayPathValue1和arrayPathValue2，如果path相同，则比较value，如果value不同，则diffRes[path] = "CHANGED"
   // 子节点遍历完成之后，根据子节点的结果，给父节点打diff标记
@@ -669,28 +590,7 @@ export function calcDiff(
       }
     } else {
       // 数组1和数组2的path相同，则比较它们的值，相同则为"UNCHANGED"，不同则为"CHANGED"
-
-      const curPath=arrayPathValue1[i].path;
-      const isEqualKey=matchIsEqualKey(isEqualKeyArr,curPath)
-      if(isEqualKey){
-        const isEqualFunc=isEqualMap![isEqualKey];
-        const a=getValueByPath(data1,curPath);
-        const b=getValueByPath(data2,curPath);
-        const isEqual=isEqualFunc(a,b,
-          {
-            data1,
-            data2,
-            type: "",
-            path: curPath,
-          }
-        )
-        if(isEqual){
-          setNodeDiffRes(diffRes,arrayPathValue1[i].path,"UNCHANGED");
-        }else{
-          setNodeDiffRes(diffRes,arrayPathValue1[i].path,"CHANGED");
-        }
-      }
-      else if (
+      if (
         isEqualFundamentalData(
           arrayPathValue1[i].value,
           arrayPathValue2[j].value,

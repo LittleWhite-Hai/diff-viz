@@ -2,7 +2,7 @@ import DiffDemo from "./DiffVizDemo.tsx";
 import DiffFuncDemo from "./DiffFuncDemo.tsx";
 import "./index.css";
 import React, { useEffect, useState } from "react";
-import { Button, Card, Typography } from "antd";
+import {  Card, Typography } from "antd";
 import { DiffVizFQA, DiffFuncFQA } from "./FQA.tsx";
 import CodeExample from "./CodeExample.tsx";
 import { TranslationOutlined } from "@ant-design/icons";
@@ -375,25 +375,28 @@ function CodeExample3() {
         style: {
           display: "block",
           backgroundColor:
-            lineNumber == 6 || lineNumber == 7 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
+            lineNumber == 6 || lineNumber == 10 ? "#ffeb3b40" : "", // 这里设置你想要高亮的行号范围
         },
       })}
       code={`import { calcDiff, applyDiff } from "diff-viz";
 const ref1 = useRef<HTMLDivElement>(null)
 const ref2 = useRef<HTMLDivElement>(null)
 
+const diffRes = useMemo(() => {
+  calcDiff({ data1, data2 })
+}, [data1, data2])
+
 useEffect(() => {
-  const diffRes = calcDiff({ data1, data2 });
   applyDiff({ diffRes, domWrapper1:ref1.current, domWrapper2:ref2.current });
-}, [data1, data2]);
+}, [diffRes]);
 
 return (
   <>
     <div ref={ref1}>
-      <RenderData data={data1} /> {/* 你的业务代码,渲染数据1 */}
+      <RenderData data={diffRes.alignedData1} /> {/* 你的业务代码,渲染数据1 */}
     </div>
     <div ref={ref2}>
-      <RenderData data={data2} /> {/* 你的业务代码,渲染数据2 */}
+      <RenderData data={diffRes.alignedData2} /> {/* 你的业务代码,渲染数据2 */}
     </div>
   </>
 );`}

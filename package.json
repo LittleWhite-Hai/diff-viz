@@ -5,7 +5,7 @@
     "diff",
     "visualization"
   ],
-  "version": "1.2.26",
+  "version": "1.2.27",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

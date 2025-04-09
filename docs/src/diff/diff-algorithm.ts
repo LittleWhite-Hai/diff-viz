@@ -238,16 +238,7 @@ export function getObjectPathArrayMap(data: any) {
 }
 
 function getRegPath(path: string) {
-  return path
-    .split(".")
-    .map((i) => {
-      if (/^\d+$/.test(i)) {
-        return "[]";
-      } else {
-        return i;
-      }
-    })
-    .join(".");
+  return path+".[]"
 }
 
 function getPathKey(fullPath: string, map: Record<string, string | boolean>) {
@@ -294,7 +285,7 @@ function innerAlignArray(props: {
         // 默认使用LCS方法
         const listKey = getPathKey(fullPath, arrayAlignLCSMap) as string;
         const lcs = getLCS(mapResult1[path], mapResult2[path], listKey);
-
+           
         [alignedArr1, alignedArr2] = alignByLCS({
           arr1: mapResult1[path],
           arr2: mapResult2[path],

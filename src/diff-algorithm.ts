@@ -528,6 +528,83 @@ export function alignDataArray<T = any>(props: {
   });
 }
 
+
+/**
+ * 匹配函数，用于匹配带有通配符的模板字符串
+ * @param templates 模板字符串数组，可能包含通配符 *
+ * @param str 待匹配的字符串
+ * @returns 匹配到的模板字符串，如果没有匹配则返回 undefined
+ */
+function matchIsEqualKey(templates: string[], str: string): string | undefined {
+  // 将待匹配字符串按点分割
+  const strParts = str.split('.');
+  const matches:string[] = [];
+  
+  // 遍历所有模板
+  for (const template of templates) {
+    // 将模板按点分割
+    const templateParts = template.split('.');
+
+    // 如果模板和待匹配字符串完全相同，则返回模板
+    if(template===str){
+      return template;
+    }
+    
+    // 如果模板部分数量与待匹配字符串部分数量不同，且模板不包含通配符，则跳过
+    if (templateParts.length !== strParts.length && !template.includes('*')) {
+      continue;
+    }
+    
+    // 检查是否匹配
+    let isMatch = true;
+    
+    // 遍历模板的每一部分
+    for (let i = 0; i < Math.max(templateParts.length, strParts.length); i++) {
+      // 如果模板部分已经结束，但待匹配字符串还有部分，则不匹配
+      if (i >= templateParts.length) {
+        isMatch = false;
+        break;
+      }
+      
+      // 如果待匹配字符串部分已经结束，但模板还有部分，则不匹配
+      if (i >= strParts.length) {
+        isMatch = false;
+        break;
+      }
+      
+      // 如果模板部分是通配符，则匹配任何部分
+      if (templateParts[i] === '*') {
+        continue;
+      }
+      
+      // 如果模板部分与待匹配字符串部分不匹配，则不匹配
+      if (templateParts[i] !== strParts[i]) {
+        isMatch = false;
+        break;
+      }
+    }
+    
+    // 如果匹配，则返回模板
+    if (isMatch) {
+      matches.push(template);
+    }
+  }
+  if(matches.length>0){
+    // 返回*最少的一个
+    let minStarCount:number=Infinity;
+    let minStarCountTemplate:string='';
+    for(const template of matches){
+      const starCount=template.split('.').filter(part => part === '*').length;
+      if(starCount<minStarCount){
+        minStarCount=starCount;
+        minStarCountTemplate=template;  
+      }
+    }
+    return minStarCountTemplate;
+  }
+  return undefined
+} 
+
 function isNullOrUndefined(value: any) {
   return value === null || value === undefined;
 }
@@ -661,3 +738,4 @@ function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {
 
   return a === b;
 }
+

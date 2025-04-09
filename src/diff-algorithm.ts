@@ -238,16 +238,7 @@ export function getObjectPathArrayMap(data: any) {
 }
 
 function getRegPath(path: string) {
-  return path
-    .split(".")
-    .map((i) => {
-      if (/^\d+$/.test(i)) {
-        return "[]";
-      } else {
-        return i;
-      }
-    })
-    .join(".");
+  return path+".[]"
 }
 
 function getPathKey(fullPath: string, map: Record<string, string | boolean>) {

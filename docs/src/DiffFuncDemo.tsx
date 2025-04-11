@@ -36,6 +36,29 @@ const data1 = {
       salary: 25000,
       address: "35 Park Road, London",
       email: "alisa.ross@example.com",
+      arr:[{
+        kk:"li",
+        jl:"jflea",
+        fjela:'j'
+      },{
+        kk:"hai",
+        jl:"32332"
+
+      },{
+        kk:"lo",
+        jl:"121212"
+
+      },{
+        kk:"loo",
+        jl:"1231231"
+
+      }],
+      xxx:{
+        jjj:{ooo:1}
+      },
+      zzz:{
+        jjj:{ooo:1}
+      }
     },
     {
       key: "3",
@@ -61,9 +84,20 @@ const data1 = {
   ],
 };
 const data2 = _.cloneDeep(data1);
-data2.tech.编码分辨率 = "2080*1920";
+data2.tech.配置模式 = "这种";
+data2.tech.编码分辨率 = "208*10";
+data2.tech.采集分辨率 = "208*1920";
 data2.users.splice(0, 1);
 data2.users[2].name = "Kevin Sandr";
+data2.users[2].salary = 17001;
+data2.users[1].salary = 25005;
+
+data2.users[0].xxx.jjj.ooo=5
+data2.users[0].zzz.jjj.ooo=6
+data2.users[0].arr?.shift()
+data2.users[0].arr[0].jl="jlij"
+data2.users[0].arr[1].jl="zfleij"
+
 // modifyedData.currentStep = 1;
 
 function DescList(props: { data: { label: string; value: string }[] }) {
@@ -230,14 +264,36 @@ export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
 
   const wrapperRef1 = useRef<HTMLDivElement>(null);
   const wrapperRef2 = useRef<HTMLDivElement>(null);
+
   const diffRes = useMemo(
     () =>
       calcDiffWithArrayAlign({
         data1: data1,
         data2: editedData2,
+        arrayAlignLCSMap:{
+          "users":"key",
+          "users.*.arr":"kk"
+        },
+        isEqualMap: {
+          "tech.*": (a, b) => {
+            console.log("a", a);
+            console.log("b", b);
+            return a.length === b.length;
+          },
+          
+          "users.*.salary": (a, b) => {
+            console.log("aa", a);
+            console.log("bb", b);
+            return Math.abs(a-b)<5;
+          },
+
+        },
       }),
     [editedData2]
   );
+  console.log("🔥data1", data1);
+  console.log("🔥data2", data2);
+  console.log("🔥diffRes", diffRes);
   useEffect(() => {
     applyDiff({
       diffRes: diffRes.diffRes,

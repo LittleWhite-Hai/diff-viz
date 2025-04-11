@@ -15,7 +15,7 @@ export function getValueByPath(
 function isSameItem<T>(props: {
   data1: T;
   data2: T;
-  listKey: string;
+  listKey?: string;
 }): boolean {
   const { data1: obj1, data2: obj2, listKey } = props;
 
@@ -27,7 +27,7 @@ function isSameItem<T>(props: {
 }
 
 // 获取两个数组的最长子序列
-function getLCS<T>(arr1: T[], arr2: T[], listKey: string): T[] {
+function getLCS<T>(arr1: T[], arr2: T[], listKey?: string): T[] {
   const dp: T[][][] = Array(arr1.length + 1)
     .fill(0)
     .map(() => Array(arr2.length + 1).fill([[]]));
@@ -60,7 +60,7 @@ function alignByLCS<T>(props: {
   arr1: T[];
   arr2: T[];
   lcs: T[];
-  listKey: string;
+  listKey?: string;
   // isEqualMap: Record<string, IsEqualFuncType>;
   // listKeyMap: Record<string, string>;
 }): [(T | undefined)[], (T | undefined)[]] {
@@ -237,13 +237,88 @@ export function getObjectPathArrayMap(data: any) {
   return { mapResult, arrayResult };
 }
 
-function getRegPath(path: string) {
-  return path+".[]"
-}
+/**
+ * 匹配函数，用于匹配带有通配符的模板字符串
+ * @param templates 模板字符串数组，可能包含通配符 *
+ * @param str 待匹配的字符串
+ * @returns 匹配到的模板字符串，如果没有匹配则返回 undefined
+ */
+function matchTemplateKey(
+  templates: string[],
+  str: string
+): string | undefined {
+  if (templates.length === 0) {
+    return undefined;
+  }
+  // 将待匹配字符串按点分割
+  const strParts = str.split(".");
+  const matches: string[] = [];
 
-function getPathKey(fullPath: string, map: Record<string, string | boolean>) {
-  const regPath = getRegPath(fullPath);
-  return map[fullPath] || map[regPath];
+  // 遍历所有模板
+  for (const template of templates) {
+    // 将模板按点分割
+    const templateParts = template.split(".");
+
+    // 如果模板和待匹配字符串完全相同，则返回模板
+    if (template === str) {
+      return template;
+    }
+
+    // 如果模板部分数量与待匹配字符串部分数量不同，且模板不包含通配符，则跳过
+    if (templateParts.length !== strParts.length && !template.includes("*")) {
+      continue;
+    }
+
+    // 检查是否匹配
+    let isMatch = true;
+
+    // 遍历模板的每一部分
+    for (let i = 0; i < Math.max(templateParts.length, strParts.length); i++) {
+      // 如果模板部分已经结束，但待匹配字符串还有部分，则不匹配
+      if (i >= templateParts.length) {
+        isMatch = false;
+        break;
+      }
+
+      // 如果待匹配字符串部分已经结束，但模板还有部分，则不匹配
+      if (i >= strParts.length) {
+        isMatch = false;
+        break;
+      }
+
+      // 如果模板部分是通配符，则匹配任何部分
+      if (templateParts[i] === "*") {
+        continue;
+      }
+
+      // 如果模板部分与待匹配字符串部分不匹配，则不匹配
+      if (templateParts[i] !== strParts[i]) {
+        isMatch = false;
+        break;
+      }
+    }
+
+    // 如果匹配，则返回模板
+    if (isMatch) {
+      matches.push(template);
+    }
+  }
+  if (matches.length > 0) {
+    // 返回*最少的一个
+    let minStarCount: number = Infinity;
+    let minStarCountTemplate: string = "";
+    for (const template of matches) {
+      const starCount = template
+        .split(".")
+        .filter((part) => part === "*").length;
+      if (starCount < minStarCount) {
+        minStarCount = starCount;
+        minStarCountTemplate = template;
+      }
+    }
+    return minStarCountTemplate;
+  }
+  return undefined;
 }
 
 // 递归对齐对象中的数组，会修改data1和data2
@@ -263,6 +338,10 @@ function innerAlignArray(props: {
     arrayAlignData2Map,
     arrayNoAlignMap,
   } = props;
+  const arrayAlignLCSArr = Object.keys(arrayAlignLCSMap);
+  const arrayAlignData2Arr = Object.keys(arrayAlignData2Map);
+  const arrayNoAlignArr = Object.keys(arrayNoAlignMap);
+
   const { mapResult: mapResult1 } = getObjectPathArrayMap(data1);
   const { mapResult: mapResult2 } = getObjectPathArrayMap(data2);
 
@@ -271,10 +350,14 @@ function innerAlignArray(props: {
       const fullPath = pathPrefix + path;
       let alignedArr1 = data1[path];
       let alignedArr2 = data2[path];
-      if (getPathKey(fullPath, arrayNoAlignMap)) {
+      const noAlignKey = matchTemplateKey(arrayNoAlignArr, fullPath);
+      const alignArr2Key = matchTemplateKey(arrayAlignData2Arr, fullPath);
+      const alignLCSKey = matchTemplateKey(arrayAlignLCSArr, fullPath);
+
+      if (noAlignKey) {
         // do nothing
-      } else if (getPathKey(fullPath, arrayAlignData2Map)) {
-        const listKey = getPathKey(fullPath, arrayAlignData2Map);
+      } else if (alignArr2Key) {
+        const listKey = arrayAlignData2Map[alignArr2Key];
         [alignedArr1, alignedArr2] = alignByArr2({
           arr1: mapResult1[path],
           arr2: mapResult2[path],
@@ -283,9 +366,8 @@ function innerAlignArray(props: {
         });
       } else {
         // 默认使用LCS方法
-        const listKey = getPathKey(fullPath, arrayAlignLCSMap) as string;
+        const listKey = alignLCSKey ? arrayAlignLCSMap[alignLCSKey] : undefined;
         const lcs = getLCS(mapResult1[path], mapResult2[path], listKey);
-           
         [alignedArr1, alignedArr2] = alignByLCS({
           arr1: mapResult1[path],
           arr2: mapResult2[path],
@@ -293,7 +375,6 @@ function innerAlignArray(props: {
           listKey,
         });
       }
-
       for (let i = 0; i < alignedArr1.length && i < alignedArr2.length; i++) {
         innerAlignArray({
           ...props,
@@ -302,11 +383,10 @@ function innerAlignArray(props: {
           pathPrefix: fullPath + "." + i + ".",
         });
       }
-
       // 只修改对象内的数组，不创建额外的路径
-      const pathParts = path.split('.');
+      const pathParts = path.split(".");
       let current1 = data1;
-      let i=0;
+      let i = 0;
       while (i < pathParts.length - 1) {
         if (current1[pathParts[i]]) {
           current1 = current1[pathParts[i]];
@@ -317,7 +397,7 @@ function innerAlignArray(props: {
         }
       }
       let current2 = data2;
-      let j=0;
+      let j = 0;
       while (j < pathParts.length - 1) {
         if (current2[pathParts[j]]) {
           current2 = current2[pathParts[j]];
@@ -327,8 +407,7 @@ function innerAlignArray(props: {
           break;
         }
       }
-      
-      
+
       current1[pathParts[i]] = alignedArr1;
       current2[pathParts[j]] = alignedArr2;
     }
@@ -461,7 +540,7 @@ export function calcDiffWithArrayAlign<T = any>(props: {
   const diffRes = calcDiff(
     alignedData1,
     alignedData2,
-    props.isEqualMap ?? {},
+    props.isEqualMap,
     props.strictMode ?? true
   );
   return { diffRes, alignedData1, alignedData2 };
@@ -519,6 +598,29 @@ export function alignDataArray<T = any>(props: {
   });
 }
 
+function getCustomIsEqualRes(props: {
+  isEqualKeyArr: string[];
+  path: string;
+  isEqualMap: Record<string, IsEqualFuncType>;
+  value1: any;
+  value2: any;
+  ext: { data1: any; data2: any; type: ""; path: string };
+}) {
+  const { isEqualKeyArr, path, isEqualMap, value1, value2, ext } = props;
+  const isEqualKey = matchTemplateKey(isEqualKeyArr, path);
+  if (isEqualKey) {
+    const isEqualFunc = isEqualMap[isEqualKey];
+
+    const res = isEqualFunc(value1, value2, ext);
+    if (res === true) {
+      return "UNCHANGED";
+    } else if (res === false) {
+      return "CHANGED";
+    }
+  }
+  return undefined;
+}
+
 function isNullOrUndefined(value: any) {
   return value === null || value === undefined;
 }
@@ -533,9 +635,11 @@ function isNullOrUndefined(value: any) {
 export function calcDiff(
   data1: any,
   data2: any,
-  isEqualMap?: Record<string, IsEqualFuncType>,
+  isEqualMap: Record<string, IsEqualFuncType> = {},
   strictMode?: boolean
 ) {
+  const isEqualKeyArr: string[] = Object.keys(isEqualMap);
+
   const {
     arrayResult: arrayPathValue1,
     arrayObjectResult: arrayObjectResult1,
@@ -564,7 +668,22 @@ export function calcDiff(
         i < arrayPathValue1.length &&
         arrayPathValue1[i].path.localeCompare(arrayPathValue2[j].path) < 0
       ) {
-        setNodeDiffRes(diffRes, arrayPathValue1[i].path, "REMOVED");
+        const path = arrayPathValue1[i].path;
+        const isEqualRes = getCustomIsEqualRes({
+          isEqualKeyArr,
+          path,
+          isEqualMap,
+          value1: arrayPathValue1[i].value,
+          value2: undefined,
+          ext: {
+            data1,
+            data2,
+            type: "",
+            path,
+          },
+        });
+
+        setNodeDiffRes(diffRes, path, isEqualRes ?? "REMOVED");
         i++;
       }
     } else if (
@@ -576,21 +695,53 @@ export function calcDiff(
         j < arrayPathValue2.length &&
         arrayPathValue1[i].path.localeCompare(arrayPathValue2[j].path) > 0
       ) {
-        setNodeDiffRes(diffRes, arrayPathValue2[j].path, "CREATED");
+        const path = arrayPathValue2[j].path;
+        const isEqualRes = getCustomIsEqualRes({
+          isEqualKeyArr,
+          path,
+          isEqualMap,
+          value1: undefined,
+          value2: arrayPathValue2[j].value,
+          ext: {
+            data1,
+            data2,
+            type: "",
+            path,
+          },
+        });
+
+        setNodeDiffRes(diffRes, path, isEqualRes ?? "CREATED");
         j++;
       }
     } else {
+      const path = arrayPathValue1[i].path;
+      const isEqualRes = getCustomIsEqualRes({
+        isEqualKeyArr,
+        path,
+        isEqualMap,
+        value1: arrayPathValue1[i].value,
+        value2: arrayPathValue2[j].value,
+        ext: {
+          data1,
+          data2,
+          type: "",
+          path,
+        },
+      });
+
       // 数组1和数组2的path相同，则比较它们的值，相同则为"UNCHANGED"，不同则为"CHANGED"
-      if (
+      if (isEqualRes) {
+        setNodeDiffRes(diffRes, path, isEqualRes);
+      } else if (
         isEqualFundamentalData(
           arrayPathValue1[i].value,
           arrayPathValue2[j].value,
           strictMode ?? true
         )
       ) {
-        setNodeDiffRes(diffRes, arrayPathValue1[i].path, "UNCHANGED");
+        setNodeDiffRes(diffRes, path, "UNCHANGED");
       } else {
-        setNodeDiffRes(diffRes, arrayPathValue1[i].path, "CHANGED");
+        setNodeDiffRes(diffRes, path, "CHANGED");
       }
       i++;
       j++;
@@ -624,19 +775,7 @@ export function calcDiff(
     }
   }
 
-  // 用户自定义的isEqual会覆盖原本的diff计算
-  Object.entries(isEqualMap ?? {}).forEach(([path, isEqualFunc]) => {
-    const a = getValueByPath(data1, path);
-    const b = getValueByPath(data2, path);
-    const isEqual = isEqualFunc(a, b, {
-      data1,
-      data2,
-      type: "",
-      path,
-    });
-    diffRes[path] = isEqual ? "UNCHANGED" : "CHANGED";
-  });
-
+ 
   return diffRes;
 }
 function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {

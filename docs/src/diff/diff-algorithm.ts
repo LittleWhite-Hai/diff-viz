@@ -607,6 +607,7 @@ function getCustomIsEqualRes(props: {
   ext: { data1: any; data2: any; type: ""; path: string };
 }) {
   const { isEqualKeyArr, path, isEqualMap, value1, value2, ext } = props;
+
   const isEqualKey = matchTemplateKey(isEqualKeyArr, path);
   if (isEqualKey) {
     const isEqualFunc = isEqualMap[isEqualKey];
@@ -748,11 +749,37 @@ export function calcDiff(
     }
   }
   while (i < arrayPathValue1.length) {
-    setNodeDiffRes(diffRes, arrayPathValue1[i].path, "REMOVED");
+    const isEqualRes = getCustomIsEqualRes({
+      isEqualKeyArr,
+      path: arrayPathValue1[i].path,
+      isEqualMap,
+      value1: arrayPathValue1[i].value,
+      value2: undefined,
+      ext: {
+        data1,
+        data2,
+        type: "",
+        path: arrayPathValue1[i].path,
+      },
+    });
+    setNodeDiffRes(diffRes, arrayPathValue1[i].path, isEqualRes ?? "REMOVED");
     i++;
   }
   while (j < arrayPathValue2.length) {
-    setNodeDiffRes(diffRes, arrayPathValue2[j].path, "CREATED");
+    const isEqualRes = getCustomIsEqualRes({
+      isEqualKeyArr,
+      path: arrayPathValue2[j].path,
+      isEqualMap,
+      value1: arrayPathValue2[j].value,
+      value2: undefined,
+      ext: {
+        data1,
+        data2,
+        type: "",
+        path: arrayPathValue2[j].path,
+      },
+    });
+    setNodeDiffRes(diffRes, arrayPathValue2[j].path, isEqualRes ?? "CREATED");
     j++;
   }
 
@@ -763,19 +790,33 @@ export function calcDiff(
       ...arrayObjectResult2.map((x) => x.path),
     ])
   );
+
   for (let i = 0; i < combinedArray.length; i++) {
     const path = combinedArray[i];
     const d1 = mapObjectResult1.get(path);
     const d2 = mapObjectResult2.get(path);
-
-    if (isNullOrUndefined(d1) && !isNullOrUndefined(d2)) {
+    const isEqualRes = getCustomIsEqualRes({
+      isEqualKeyArr,
+      path,
+      isEqualMap,
+      value1: d1,
+      value2: d2,
+      ext: {
+        data1,
+        data2,
+        type: "",
+        path,
+      },
+    });
+    if (isEqualRes) {
+      diffRes[path] = isEqualRes;
+    } else if (isNullOrUndefined(d1) && !isNullOrUndefined(d2)) {
       diffRes[path] = "CREATED";
     } else if (!isNullOrUndefined(d1) && isNullOrUndefined(d2)) {
       diffRes[path] = "REMOVED";
     }
   }
 
- 
   return diffRes;
 }
 function isEqualFundamentalData(a: BaseType, b: BaseType, strictMode: boolean) {

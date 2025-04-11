@@ -89,7 +89,6 @@ data2.tech.编码分辨率 = "208*10";
 data2.tech.采集分辨率 = "208*1920";
 data2.users.splice(0, 1);
 data2.users[2].name = "Kevin Sandr";
-data2.users[2].salary = 17001;
 data2.users[1].salary = 25005;
 
 data2.users[0].xxx.jjj.ooo=5
@@ -279,12 +278,6 @@ export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
             console.log("a", a);
             console.log("b", b);
             return a.length === b.length;
-          },
-          
-          "users.*.salary": (a, b) => {
-            console.log("aa", a);
-            console.log("bb", b);
-            return Math.abs(a-b)<5;
           },
 
         },

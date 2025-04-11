@@ -541,7 +541,7 @@ export function calcDiffWithArrayAlign<T = any>(props: {
     alignedData1,
     alignedData2,
     props.isEqualMap,
-    props.strictMode ?? true
+    props.strictMode
   );
   return { diffRes, alignedData1, alignedData2 };
 }
@@ -637,7 +637,7 @@ export function calcDiff(
   data1: any,
   data2: any,
   isEqualMap: Record<string, IsEqualFuncType> = {},
-  strictMode?: boolean
+  strictMode: boolean = true
 ) {
   const isEqualKeyArr: string[] = Object.keys(isEqualMap);
 
@@ -683,8 +683,17 @@ export function calcDiff(
             path,
           },
         });
+        if (isEqualRes) {
+          setNodeDiffRes(diffRes, path, isEqualRes);
+        } else if (
+          !strictMode &&
+          ["", null, undefined, NaN].includes(arrayPathValue1[i].value as any)
+        ) {
+          setNodeDiffRes(diffRes, path, "UNCHANGED");
+        } else {
+          setNodeDiffRes(diffRes, path, "REMOVED");
+        }
 
-        setNodeDiffRes(diffRes, path, isEqualRes ?? "REMOVED");
         i++;
       }
     } else if (
@@ -710,8 +719,16 @@ export function calcDiff(
             path,
           },
         });
-
-        setNodeDiffRes(diffRes, path, isEqualRes ?? "CREATED");
+        if (isEqualRes) {
+          setNodeDiffRes(diffRes, path, isEqualRes);
+        } else if (
+          !strictMode &&
+          ["", null, undefined, NaN].includes(arrayPathValue2[j].value as any)
+        ) {
+          setNodeDiffRes(diffRes, path, "UNCHANGED");
+        } else {
+          setNodeDiffRes(diffRes, path, "CREATED");
+        }
         j++;
       }
     } else {

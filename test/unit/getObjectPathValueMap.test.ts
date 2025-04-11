@@ -124,4 +124,67 @@ describe('getObjectPathValueMap', () => {
     const sortedPaths = [...paths].sort();
     expect(paths).toEqual(sortedPaths);
   });
+
+  it('should handle root level non-object values correctly', () => {
+    // 测试根级别的非对象值
+    const primitiveValues = [
+      123,
+      'string',
+      true,
+      null,
+      undefined
+    ];
+    
+    primitiveValues.forEach(value => {
+      const { mapResult } = getObjectPathValueMap(value);
+      
+      // 对于根级别的非对象值，结果应该是空映射
+      expect(mapResult.size).toBe(0);
+    });
+  });
+  
+  it('should skip empty paths in nested objects', () => {
+    const obj = {
+      foo: {
+        '': 'empty key',  // 空键
+        validKey: 'valid value'
+      },
+      '': 'root empty key'  // 根级别空键
+    };
+    
+    const { mapResult } = getObjectPathValueMap(obj);
+    
+    // 应该跳过空键
+    expect(mapResult.has('')).toBeFalsy();
+    expect(mapResult.has('foo.')).toBeFalsy();
+    
+    // 但应该保留有效路径
+    expect(mapResult.has('foo.validKey')).toBeTruthy();
+    expect(mapResult.get('foo.validKey')).toBe('valid value');
+  });
+  
+  it('should handle objects with empty or invalid keys correctly', () => {
+    const objWithEmptyKeys = {
+      '': 'empty key at root',
+      valid: {
+        '': 'empty key nested',
+        nested: 'nested value'
+      },
+      'valid.with.dots': 'value with dots in key'
+    };
+    
+    const { mapResult, arrayResult } = getObjectPathValueMap(objWithEmptyKeys);
+    
+    // 空键应该被跳过
+    expect(mapResult.has('')).toBeFalsy();
+    expect(mapResult.has('valid.')).toBeFalsy();
+    
+    // 但有效路径应该被包含
+    expect(mapResult.has('valid.nested')).toBeTruthy();
+    expect(mapResult.get('valid.nested')).toBe('nested value');
+    
+    // 键名中有点号的情况
+    expect(mapResult.has('valid.with.dots')).toBeTruthy();
+    expect(mapResult.get('valid.with.dots')).toBe('value with dots in key');
+  });
 }); 

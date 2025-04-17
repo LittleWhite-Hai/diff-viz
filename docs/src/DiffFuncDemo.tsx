@@ -270,8 +270,8 @@ export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
         data1: data1,
         data2: editedData2,
         arrayAlignLCSMap:{
-          "users":"key",
-          "users.*.arr":"kk"
+          "users.*":"key",
+          "users.*.arr.*":"kk"
         },
         isEqualMap: {
           "tech.*": (a, b) => {

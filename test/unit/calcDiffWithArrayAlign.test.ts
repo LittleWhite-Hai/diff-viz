@@ -289,7 +289,6 @@ describe("calcDiffWithArrayAlign", () => {
         "*": ""  // 对顶层数组使用LCS对齐，但不指定键（纯数组没有键）
       }
     });
-    console.log(result)
     // 检查子数组变化
     expect(result.diffRes["0"]).toBe("UNCHANGED");
     // expect(result.diffRes["1"]).toBe("CREATED");

@@ -179,7 +179,7 @@ describe("alignDataArray", () => {
       ["a", "b", "c"], // 第四个子数组，不同类型
     ];
     const data2 = cloneDeep(data1);
-    // 修改1: 改变第一个子数组中的值
+    // 加了一个元素
     data2.splice(2, 0,'xx');
 
     const [alignData1, alignData2] = alignByLCS2(data1, data2);

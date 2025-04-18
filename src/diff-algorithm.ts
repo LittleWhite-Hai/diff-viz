@@ -166,6 +166,108 @@ export function alignByLCS<T>(props: {
   return [alignedArr1, alignedArr2];
 }
 
+/**
+ * 计算最长公共子序列矩阵
+ * @param {Array} arr1 第一个数组
+ * @param {Array} arr2 第二个数组
+ * @returns {Array} LCS矩阵
+ */
+function computeLCSMatrix(arr1: any[], arr2: any[],listKey?:string) {
+  const m = arr1.length;
+  const n = arr2.length;
+  
+  // 创建DP表
+  const dp = Array(m + 1).fill(0).map(() => Array(n + 1).fill(0));
+  
+  // 填充DP表
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (isSameItem({
+        data1: arr1[i - 1],
+        data2: arr2[j - 1],
+        listKey,
+      })) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+  }
+  
+  return dp;
+}
+
+/**
+ * 根据LCS矩阵构建对齐后的数组
+ * @param {Array} arr1 第一个数组
+ * @param {Array} arr2 第二个数组
+ * @param {Array} lcsMatrix LCS矩阵
+ * @returns {Array} 对齐后的两个数组 [aligned1, aligned2]
+ */
+function buildAlignedArrays(arr1: any[], arr2: any[], lcsMatrix: any[][],listKey?:string) {
+  let i = arr1.length;
+  let j = arr2.length;
+  const aligned1 = [];
+  const aligned2 = [];
+  
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && isSameItem({
+      data1: arr1[i - 1],
+      data2: arr2[j - 1],
+      listKey,
+    })) {
+      // 两数组元素相同，都加入结果
+      aligned1.unshift(arr1[i - 1]);
+      aligned2.unshift(arr2[j - 1]);
+      i--;
+      j--;
+    } else if (j > 0 && (i === 0 || lcsMatrix[i][j - 1] >= lcsMatrix[i - 1][j])) {
+      // arr2有元素，arr1需要填充undefined
+      aligned1.unshift(undefined);
+      aligned2.unshift(arr2[j - 1]);
+      j--;
+    } else {
+      // arr1有元素，arr2需要填充undefined
+      aligned1.unshift(arr1[i - 1]);
+      aligned2.unshift(undefined);
+      i--;
+    }
+  }
+  
+  return [aligned1, aligned2];
+}
+
+
+/**
+ * 对齐两个数组，保持相同元素对齐，非共有元素用undefined填充
+ * @param {Array} arr1 第一个数组
+ * @param {Array} arr2 第二个数组
+ * @returns {Array} 返回对齐后的两个数组 [aligned1, aligned2]
+ */
+export function alignByLCS2(arr1: any[], arr2: any[],listKey?:string) {
+  // 处理边界情况
+  if (arr1.length === 0) {
+    return [
+      Array(arr2.length).fill(undefined),
+      [...arr2]
+    ];
+  }
+  
+  if (arr2.length === 0) {
+    return [
+      [...arr1],
+      Array(arr1.length).fill(undefined)
+    ];
+  }
+
+  // 计算LCS矩阵
+  const lcsMatrix = computeLCSMatrix(arr1, arr2,listKey);
+  
+  // 根据LCS矩阵重建对齐的数组
+  return buildAlignedArrays(arr1, arr2, lcsMatrix,listKey);
+}
+
+
 function alignByArr2(props: {
   arr1: Record<string, any>[];
   arr2: Record<string, any>[];
@@ -728,15 +830,11 @@ function alignArray(props: {
     return [alignedArr1, alignedArr2];
   } else if (alignLCSKey !== undefined) {
     // 以LCS为准
-
-    const lcs = getLCS(item1, item2, alignLCSKey);
-
-    const [alignedArr1, alignedArr2] = alignByLCS({
-      arr1: item1,
-      arr2: item2,
-      lcs,
-      listKey: alignLCSKey,
-    });
+    const [alignedArr1, alignedArr2] = alignByLCS2(
+      item1,
+      item2,
+      alignLCSKey
+    );
     return [alignedArr1, alignedArr2];
   }
   return undefined;
@@ -859,7 +957,7 @@ export function alignDataArray<T = any>(props: {
   } = props;
   // alignArray 无法处理恰好是数组情形，所以需要单独处理
   if (Array.isArray(data1) && Array.isArray(data2)) {
-    if (arrayAlignLCSMap['*'] || arrayAlignData2Map['*']) {
+    if (typeof arrayAlignLCSMap['*'] === 'string' || typeof arrayAlignData2Map['*'] === 'string') {
       const alignRes = alignArray({
         item1: data1,
         item2: data2,

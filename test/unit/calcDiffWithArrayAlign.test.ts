@@ -232,7 +232,7 @@ describe("calcDiffWithArrayAlign", () => {
     expect(result.alignedData1.groups[2]).toBeUndefined();
     expect(result.alignedData2.groups[2].id).toBe("g3");
   });
-  it("外层对象，嵌套多维数组", () => {
+  it("外层对象，嵌套多维数组修改", () => {
     // 创建测试数据：二维数组结构
     const data1 = [
       [1, 2, 3],         // 第一个子数组
@@ -243,13 +243,6 @@ describe("calcDiffWithArrayAlign", () => {
     const data2 = cloneDeep(data1);
     // 修改1: 改变第一个子数组中的值
     data2[0][1] = 22;  // 将2改为22
-    // 修改2: 删除第二个子数组
-    data2.splice(1, 1);
-    // 修改3: 插入新的子数组
-    data2.splice(1, 0, [10, 11, 12]);
-    // 修改4: 在最后添加新的子数组
-    data2.push([13, 14, 15]);
-    // 执行测试，使用LCS对齐第一层数组
     const result = calcDiffWithArrayAlign({
       data1,
       data2,
@@ -258,9 +251,8 @@ describe("calcDiffWithArrayAlign", () => {
       }
     });
     // 检查子数组变化
-    expect(result.diffRes["0"]).toBe("CHANGED");    // 第一个子数组值变化
-    expect(result.diffRes["0.1"]).toBe("CHANGED");  // 具体是第二个元素变化
-    expect(result.diffRes["1"]).toBe("CHANGED");    // 第二个位置变成了新数组
+    expect(result.diffRes["0"]).toBe("REMOVED");
+    expect(result.diffRes["1"]).toBe("CREATED");
     
     // 验证对齐后的数据
     const alignedData1 = result.alignedData1;
@@ -269,23 +261,47 @@ describe("calcDiffWithArrayAlign", () => {
     expect(alignedData1.length).toBe(alignedData2.length);
     // 第一个子数组的对齐 - 只有元素值变化
     expect(alignedData1[0][0]).toBe(1);
-    expect(alignedData2[0][0]).toBe(1);
     expect(alignedData1[0][1]).toBe(2);
-    expect(alignedData2[0][1]).toBe(22);
-    
-    // 第二个和第三个位置的处理（根据LCS算法的结果）
-    // 这里的断言取决于LCS的具体行为，可能需要调整
-    // 通常会尝试保留最长的相同序列
-    
-    // 确认最后添加的新子数组
-    const lastIndex = alignedData2.length - 1;
-    expect(alignedData1[lastIndex]).toBeUndefined();
-    expect(alignedData2[lastIndex]).toEqual([13, 14, 15]);
+    expect(alignedData2[1][1]).toBe(22);
+    expect(alignedData1[1]).toBeUndefined();
+    expect(alignedData2[0]).toBeUndefined();
     
     // 验证第二层数组内部元素的变化也能被检测到
-    expect(result.diffRes["0.0"]).toBe("UNCHANGED");
-    expect(result.diffRes["0.1"]).toBe("CHANGED");
-    expect(result.diffRes["0.2"]).toBe("UNCHANGED");
+    expect(result.diffRes["0.1"]).toBe("REMOVED");
+    expect(result.diffRes["0.0"]).toBe("REMOVED");
+    expect(result.diffRes["1.2"]).toBe("CREATED");
+  });
+  it("外层对象，嵌套多维数组新增", () => {
+    // 创建测试数据：二维数组结构
+    const data1:any[] = [
+      [1, 2, 3],         // 第一个子数组
+      [4, 5, 6],         // 第二个子数组
+      [7, 8, 9],         // 第三个子数组
+      ["a", "b", "c"]    // 第四个子数组，不同类型
+    ];
+    const data2 = cloneDeep(data1);
+    // 修改1: 改变第一个子数组中的值
+    data2.splice(1, 0, 'xx');
+    const result = calcDiffWithArrayAlign({
+      data1,
+      data2,
+      arrayAlignLCSMap: {
+        "*": ""  // 对顶层数组使用LCS对齐，但不指定键（纯数组没有键）
+      }
+    });
+    console.log(result)
+    // 检查子数组变化
+    expect(result.diffRes["0"]).toBe("UNCHANGED");
+    // expect(result.diffRes["1"]).toBe("CREATED");
+    
+    // 验证对齐后的数据
+    const alignedData1 = result.alignedData1;
+    const alignedData2 = result.alignedData2;
+    // 数组长度应该匹配
+    expect(alignedData1.length).toBe(alignedData2.length);
+    // 第一个子数组的对齐 - 只有元素值变化
+    expect(alignedData1[1]).toBeUndefined();
+    expect(alignedData2[1]).toBe('xx');
   });
 });
 

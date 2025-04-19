@@ -42,7 +42,7 @@ The library is thoroughly tested to ensure reliability and correctness:
 
 | File              | % Statements | % Branches | % Functions | % Lines |
 | ----------------- | ------------ | ---------- | ----------- | ------- |
-| diff-algorithm.ts | 69.84%       | 86.14%     | 79.16%      | 69.84%  |
+| diff-algorithm.ts | 97.34%       | 94.46%     | 100%        | 97.34%  |
 
 ### Test Scenarios
 
@@ -54,6 +54,7 @@ We test various scenarios to ensure robust diff detection:
 - ✅ Multi-dimensional arrays
 - ✅ Special value comparisons (null, undefined, dates)
 - ✅ Custom equality functions
+- ✅ Data2-based array alignment (preserving second array structure)
 
 ## License
 
@@ -64,5 +65,5 @@ We test various scenarios to ensure robust diff detection:
 [download-link]: https://www.npmjs.com/package/diff-viz
 [version-badge]: https://img.shields.io/npm/v/diff-viz
 [license-badge]: https://img.shields.io/github/license/Milkdown/milkdown
-[test-badge]: https://img.shields.io/badge/tests-22%20passed-brightgreen
-[coverage-badge]: https://img.shields.io/badge/coverage-86%25%20branches-yellow
+[test-badge]: https://img.shields.io/badge/tests-65%20passed-brightgreen
+[coverage-badge]: https://img.shields.io/badge/coverage-94%25%20branches-brightgreen

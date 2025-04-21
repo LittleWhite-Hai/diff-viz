@@ -8,6 +8,6 @@ export default defineConfig({
     },
     environment: 'node',
     globals: true,
-    include: ['test/unit/alignByLCS.test.ts', 'test/unit/calcDiffWithArrayAlign.test.ts'],
+    include: ['test/unit/*.test.ts'],
   },
 });

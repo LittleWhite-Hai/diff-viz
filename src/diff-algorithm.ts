@@ -58,113 +58,6 @@ function isSameItem<T>(props: {
   return _.isEqual(obj1, obj2);
 }
 
-// 获取两个数组的最长子序列
-export function getLCS<T>(arr1: T[], arr2: T[], listKey?: string): T[] {
-  const dp: T[][][] = Array(arr1.length + 1)
-    .fill(0)
-    .map(() => Array(arr2.length + 1).fill([[]]));
-
-  for (let i = 0; i < arr1.length + 1; i++) {
-    for (let j = 0; j < arr2.length + 1; j++) {
-      if (i === 0 || j === 0) {
-        dp[i][j] = [];
-      } else if (
-        isSameItem({
-          data1: arr1[i - 1],
-          data2: arr2[j - 1],
-          listKey,
-        })
-      ) {
-        dp[i][j] = [...dp[i - 1][j - 1], arr1[i - 1]];
-      } else {
-        dp[i][j] =
-          dp[i - 1][j].length > dp[i][j - 1].length
-            ? dp[i - 1][j]
-            : dp[i][j - 1];
-      }
-    }
-  }
-
-  return dp[arr1.length][arr2.length];
-}
-// 对齐两个数组: 匹配最长子序列，并将两数组内的最长子序列元素 index 对齐
-export function alignByLCS<T>(props: {
-  arr1: T[];
-  arr2: T[];
-  lcs: T[];
-  listKey?: string;
-  // isEqualMap: Record<string, IsEqualFuncType>;
-  // listKeyMap: Record<string, string>;
-}): [(T | undefined)[], (T | undefined)[]] {
-  const { arr1, arr2, lcs, listKey } = props;
-
-  const alignedArr1: (T | undefined)[] = [];
-  const alignedArr2: (T | undefined)[] = [];
-  let arrIdx1 = 0;
-  let arrOffset1 = 0;
-  let arrIdx2 = 0;
-  let arrOffset2 = 0;
-  let lcsIdx = 0;
-  while (lcsIdx < lcs.length) {
-    const resI = lcs[lcsIdx];
-    while (
-      arrIdx1 - arrOffset1 < arr1.length &&
-      !isSameItem({
-        data1: resI,
-        data2: arr1[arrIdx1 - arrOffset1],
-        listKey,
-      })
-    ) {
-      alignedArr1.push(arr1[arrIdx1 - arrOffset1]);
-      arrIdx1++;
-    }
-    while (
-      arrIdx2 - arrOffset2 < arr2.length &&
-      !isSameItem({
-        data1: resI,
-        data2: arr2[arrIdx2 - arrOffset2],
-        listKey,
-      })
-    ) {
-      alignedArr2.push(arr2[arrIdx2 - arrOffset2]);
-      arrIdx2++;
-    }
-    while (arrIdx1 < arrIdx2) {
-      alignedArr1.push(undefined);
-      arrOffset1++;
-      arrIdx1++;
-    }
-    while (arrIdx2 < arrIdx1) {
-      alignedArr2.push(undefined);
-      arrOffset2++;
-      arrIdx2++;
-    }
-    alignedArr1.push(arr1[arrIdx1 - arrOffset1]);
-    alignedArr2.push(arr2[arrIdx2 - arrOffset2]);
-    arrIdx1++;
-    arrIdx2++;
-    lcsIdx++;
-  }
-  while (arrIdx1 - arrOffset1 < arr1.length) {
-    alignedArr1.push(arr1[arrIdx1 - arrOffset1]);
-    arrIdx1++;
-  }
-  while (arrIdx2 - arrOffset2 < arr2.length) {
-    alignedArr2.push(arr2[arrIdx2 - arrOffset2]);
-    arrIdx2++;
-  }
-  while (arrIdx1 < arrIdx2) {
-    alignedArr1.push(undefined);
-    arrOffset1++;
-    arrIdx1++;
-  }
-  while (arrIdx2 < arrIdx1) {
-    alignedArr2.push(undefined);
-    arrOffset2++;
-    arrIdx2++;
-  }
-  return [alignedArr1, alignedArr2];
-}
 
 /**
  * 计算最长公共子序列矩阵
@@ -244,7 +137,7 @@ function buildAlignedArrays(arr1: any[], arr2: any[], lcsMatrix: any[][],listKey
  * @param {Array} arr2 第二个数组
  * @returns {Array} 返回对齐后的两个数组 [aligned1, aligned2]
  */
-export function alignByLCS2(arr1: any[], arr2: any[],listKey?:string) {
+export function alignByLCS(arr1: any[], arr2: any[],listKey?:string) {
   // 处理边界情况
   if (arr1.length === 0) {
     return [
@@ -830,7 +723,7 @@ function alignArray(props: {
     return [alignedArr1, alignedArr2];
   } else if (alignLCSKey !== undefined) {
     // 以LCS为准
-    const [alignedArr1, alignedArr2] = alignByLCS2(
+    const [alignedArr1, alignedArr2] = alignByLCS(
       item1,
       item2,
       alignLCSKey

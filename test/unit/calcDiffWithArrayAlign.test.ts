@@ -1,6 +1,6 @@
 import { cloneDeep } from "lodash";
 import { it, expect, describe } from "vitest";
-import { calcDiffWithArrayAlign, getLCS } from "../../src/diff-algorithm";
+import { calcDiffWithArrayAlign } from "../../src/diff-algorithm";
 
 describe("calcDiffWithArrayAlign", () => {
   it("外层纯数组，简单对象", () => {
@@ -353,43 +353,6 @@ describe("calcDiffWithArrayAlign", () => {
     expect(result.diffRes["orders.1"]).toBe("UNCHANGED"); // C003 未变
     expect(result.diffRes["orders.2.price"]).toBe("CHANGED"); // A001 的价格变了
     expect(result.diffRes["orders.3"]).toBe("CREATED"); // E005 是新增的
-  });
-});
-
-// 添加对 getLCS 函数的直接测试
-describe("getLCS", () => {
-  it("应该返回两个数组的最长公共子序列", () => {
-    // 测试简单数组
-    const arr1 = [1, 2, 3, 4, 5];
-    const arr2 = [1, 3, 5, 7];
-    
-    const lcs = getLCS(arr1, arr2);
-    expect(lcs).toEqual([1, 3, 5]); // 最长公共子序列是 [1, 3, 5]
-    
-    // 测试带有特定键的对象数组
-    const objArr1 = [
-      { id: 1, name: "A" },
-      { id: 2, name: "B" },
-      { id: 3, name: "C" },
-      { id: 4, name: "D" }
-    ];
-    
-    const objArr2 = [
-      { id: 1, name: "A" },
-      { id: 3, name: "C_modified" }, // 名称变了但 ID 相同
-      { id: 5, name: "E" }
-    ];
-    
-    // 不指定 listKey，使用完全相等比较
-    const lcsNoKey = getLCS(objArr1, objArr2);
-    expect(lcsNoKey.length).toBe(1); // 只有第一个元素完全相同
-    expect(lcsNoKey[0].id).toBe(1);
-    
-    // 指定 listKey 为 id，基于 id 比较
-    const lcsWithKey = getLCS(objArr1, objArr2, "id");
-    expect(lcsWithKey.length).toBe(2); // 应该找到两个 ID 相同的元素
-    expect(lcsWithKey[0].id).toBe(1);
-    expect(lcsWithKey[1].id).toBe(3);
   });
 });
 

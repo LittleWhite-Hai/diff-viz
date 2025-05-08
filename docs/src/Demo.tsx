@@ -1,10 +1,10 @@
-import DiffDemo from "./DiffVizDemo.tsx";
-import DiffFuncDemo from "./DiffFuncDemo.tsx";
+import DiffDemo from "./DiffVizDemo";
+import DiffFuncDemo from "./DiffFuncDemo";
 import "./index.css";
 import React, { useEffect, useState } from "react";
-import {  Card, Typography } from "antd";
-import { DiffVizFQA, DiffFuncFQA } from "./FQA.tsx";
-import CodeExample from "./CodeExample.tsx";
+import { Card, Typography } from "antd";
+import { DiffVizFQA, DiffFuncFQA } from "./FQA";
+import CodeExample from "./CodeExample";
 import { TranslationOutlined } from "@ant-design/icons";
 const { Title } = Typography;
 

@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Typography, Steps, Table, Input } from "antd";
 import _ from "lodash";
-import { calcDiffWithArrayAlign, applyDiff } from "./diff/index";
+import { calcDiffWithArrayAlign, applyDiff } from "../../src/index";
 
 const data1 = {
   currentStep: 2,

@@ -42,7 +42,7 @@ The library is thoroughly tested to ensure reliability and correctness:
 
 | File              | % Statements | % Branches | % Functions | % Lines |
 | ----------------- | ------------ | ---------- | ----------- | ------- |
-| diff-algorithm.ts | 97.34%       | 94.46%     | 100%        | 97.34%  |
+| diff-algorithm.ts | 97.24%       | 94.19%     | 100%        | 97.24%  |
 
 ### Test Scenarios
 

@@ -36,29 +36,31 @@ const data1 = {
       salary: 25000,
       address: "35 Park Road, London",
       email: "alisa.ross@example.com",
-      arr:[{
-        kk:"li",
-        jl:"jflea",
-        fjela:'j'
-      },{
-        kk:"hai",
-        jl:"32332"
-
-      },{
-        kk:"lo",
-        jl:"121212"
-
-      },{
-        kk:"loo",
-        jl:"1231231"
-
-      }],
-      xxx:{
-        jjj:{ooo:1}
+      arr: [
+        {
+          kk: "li",
+          jl: "jflea",
+          fjela: "j",
+        },
+        {
+          kk: "hai",
+          jl: "32332",
+        },
+        {
+          kk: "lo",
+          jl: "121212",
+        },
+        {
+          kk: "loo",
+          jl: "1231231",
+        },
+      ],
+      xxx: {
+        jjj: { ooo: 1 },
       },
-      zzz:{
-        jjj:{ooo:1}
-      }
+      zzz: {
+        jjj: { ooo: 1 },
+      },
     },
     {
       key: "3",
@@ -90,12 +92,6 @@ data2.tech.采集分辨率 = "208*1920";
 data2.users.splice(0, 1);
 data2.users[2].name = "Kevin Sandr";
 data2.users[1].salary = 25005;
-
-data2.users[0].xxx.jjj.ooo=5
-data2.users[0].zzz.jjj.ooo=6
-data2.users[0].arr?.shift()
-data2.users[0].arr[0].jl="jlij"
-data2.users[0].arr[1].jl="zfleij"
 
 // modifyedData.currentStep = 1;
 
@@ -269,9 +265,9 @@ export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
       calcDiffWithArrayAlign({
         data1: data1,
         data2: editedData2,
-        arrayAlignLCSMap:{
-          "users.*":"key",
-          "users.*.arr.*":"kk"
+        arrayAlignLCSMap: {
+          "users.*": "key",
+          "users.*.arr.*": "kk",
         },
         isEqualMap: {
           "tech.*": (a, b) => {
@@ -279,7 +275,6 @@ export default function DiffFuncDemo(props: { count: number; isZh: boolean }) {
             console.log("b", b);
             return a.length === b.length;
           },
-
         },
       }),
     [editedData2]

@@ -1,5 +1,8 @@
+/* eslint-disable max-lines */
+/* eslint-disable @typescript-eslint/prefer-for-of */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from 'lodash';
-import { IsEqualFuncType } from "./types";
+type IsEqualFuncType = (a: any, b: any, ext: any) => boolean;
 
 export function getValueByPath(
   obj: Record<string, any>,
@@ -752,6 +755,7 @@ function recursiveAlignArray(props: {
   pathPrefix?: string;
   arrayAlignLCSMap: Record<string, string>;
   arrayAlignData2Map: Record<string, string>;
+  objectAlignMap: Record<string, string | boolean>;
 }) {
   const {
     data1,
@@ -759,6 +763,7 @@ function recursiveAlignArray(props: {
     pathPrefix = '',
     arrayAlignLCSMap,
     arrayAlignData2Map,
+    objectAlignMap,
   } = props;
   // 用户填的a.b.c.* 需要转换成a.b.c
   const arrayAlignLCSArr = Object.keys(arrayAlignLCSMap).filter((i) =>
@@ -767,6 +772,7 @@ function recursiveAlignArray(props: {
   const arrayAlignData2Arr = Object.keys(arrayAlignData2Map).filter((i) =>
     i.endsWith('.*'),
   );
+  const objectAlignArr = Object.keys(objectAlignMap);
 
   // 如果data1和data2都是数组
   if (Array.isArray(data1) && Array.isArray(data2)) {
@@ -794,6 +800,7 @@ function recursiveAlignArray(props: {
         pathPrefix: fullPath + '.',
         arrayAlignLCSMap,
         arrayAlignData2Map,
+        objectAlignMap,
       });
     }
   }
@@ -825,10 +832,30 @@ function recursiveAlignArray(props: {
         recursiveAlignArray({
           arrayAlignLCSMap,
           arrayAlignData2Map,
+          objectAlignMap,
           data1: data1[path],
           data2: data2[path],
           pathPrefix: fullPath + '.',
         });
+      }
+    });
+    // 对齐对象的key
+    Object.keys(data1).forEach((path) => {
+      if (!data2[path]) {
+        const fullPath = pathPrefix + path;
+        const alignObjKey = matchTemplateKey(objectAlignArr, fullPath);
+        if (alignObjKey) {
+          data2[path] = undefined;
+        }
+      }
+    });
+    Object.keys(data2).forEach((path) => {
+      if (!data1[path]) {
+        const fullPath = pathPrefix + path;
+        const alignObjKey = matchTemplateKey(objectAlignArr, fullPath);
+        if (alignObjKey) {
+          data1[path] = undefined;
+        }
       }
     });
   }
@@ -850,12 +877,14 @@ export function alignDataArray<T = any>(props: {
   data2: T;
   arrayAlignLCSMap?: Record<string, string>;
   arrayAlignData2Map?: Record<string, string>;
+  objectAlignMap?: Record<string, string | boolean>;
 }) {
   const {
     data1,
     data2,
     arrayAlignLCSMap = {},
     arrayAlignData2Map = {},
+    objectAlignMap = {},
   } = props;
   // alignArray 无法处理恰好是数组情形，所以需要单独处理
   if (Array.isArray(data1) && Array.isArray(data2)) {
@@ -872,6 +901,7 @@ export function alignDataArray<T = any>(props: {
           data2: alignRes[1],
           arrayAlignLCSMap,
           arrayAlignData2Map,
+          objectAlignMap,
         });
       }
     }
@@ -881,6 +911,7 @@ export function alignDataArray<T = any>(props: {
       data2,
       arrayAlignLCSMap,
       arrayAlignData2Map,
+      objectAlignMap,
     });
   }
 
@@ -889,6 +920,7 @@ export function alignDataArray<T = any>(props: {
     data2: _.cloneDeep(data2),
     arrayAlignLCSMap,
     arrayAlignData2Map,
+    objectAlignMap,
   });
   return result;
 }
@@ -899,6 +931,7 @@ export function calcDiffWithArrayAlign<T>(props: {
   isEqualMap?: Record<string, IsEqualFuncType>;
   arrayAlignLCSMap?: Record<string, string>;
   arrayAlignData2Map?: Record<string, string>;
+  objectAlignMap?: Record<string, string | boolean>;
   strictMode?: boolean;
 }): { diffRes: DiffResType; alignedData1: T; alignedData2: T } {
   const data1 = replaceDotInKeys(props.data1);
@@ -908,6 +941,7 @@ export function calcDiffWithArrayAlign<T>(props: {
     data2,
     arrayAlignLCSMap: props.arrayAlignLCSMap ?? {},
     arrayAlignData2Map: props.arrayAlignData2Map ?? {},
+    objectAlignMap: props.objectAlignMap ?? {},
   });
   const diffRes = calcDiff(
     alignedData1,

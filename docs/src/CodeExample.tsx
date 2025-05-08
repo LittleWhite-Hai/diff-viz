@@ -1,5 +1,6 @@
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { atelierForestLight } from "react-syntax-highlighter/dist/cjs/styles/hljs";
+import React from "react";
 
 export default function CodeExample(props: {
   code: string;

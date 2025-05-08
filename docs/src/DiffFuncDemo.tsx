@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Card, Typography, Steps, Table, Input } from "antd";
 import _ from "lodash";
-import { calcDiffWithArrayAlign, applyDiff } from "../../src/index";
+
+// !!!!! replace to: import { calcDiffWithArrayAlign, applyDiff } from "diff-viz";
+import { calcDiffWithArrayAlign, applyDiff } from "../../dist/index";
 
 const data1 = {
   currentStep: 2,

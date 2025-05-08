@@ -1,0 +1,1 @@
+{"root":["./vite.config.ts","./src/test.ts","./src/codeexample.tsx","./src/demo.tsx","./src/difffuncdemo.tsx","./src/diffvizdemo.tsx","./src/fqa.tsx","./src/form.tsx","./src/index.tsx","../src/apply-diff.ts","../src/diff-algorithm.ts","../src/index.ts","../src/styles.ts","../src/types.ts"],"errors":true,"version":"5.8.2"}

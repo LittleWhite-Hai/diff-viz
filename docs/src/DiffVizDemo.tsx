@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import DiffViz from "react-diff-viz";
 import Form from "./form";
 import { Card, Link, Rate } from "@arco-design/web-react";
-import { Input } from "antd";
 import _ from "lodash";
+
+// !!!!! replace to: import DiffViz from "react-diff-viz";
+import DiffViz from "../../react-diff-viz/dist/react-diff-viz";
 
 const data1 = {
   name: "diff-viz",
@@ -253,21 +253,24 @@ export default function DiffDemo(props: { isZh: boolean }) {
             arrayKey: "name",
             content: (v: any) =>
               v.map((item: any, idx: string) => (
-                <Card
-                  style={{ width: 360, marginBottom: 10 }}
-                  title={
-                    <div data-path={`other_tools.${idx}.name`}>
-                      {item?.name}
+                <div>
+                  <Card
+                    style={{ width: 360 }}
+                    title={
+                      <div data-path={`other_tools.${idx}.name`}>
+                        {item?.name}
+                      </div>
+                    }
+                    key={item?.name}
+                    extra={<Link>More</Link>}
+                  >
+                    <div data-path={`other_tools.${idx}.description`}>
+                      {item?.description}
                     </div>
-                  }
-                  key={item?.name}
-                  extra={<Link>More</Link>}
-                >
-                  <div data-path={`other_tools.${idx}.description`}>
-                    {item?.description}
-                  </div>
-                  <br />
-                </Card>
+                    <br />
+                  </Card>
+                  <div style={{ height: 10 }}></div>
+                </div>
               )),
           },
           { label: "Diff Component API" },

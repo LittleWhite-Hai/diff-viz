@@ -5,7 +5,7 @@
     "diff",
     "visualization"
   ],
-  "version": "1.2.35",
+  "version": "1.2.36",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -43,7 +43,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/LittleWhite-Hai/diff-viz.git"
+    "url": "git+https://github.com/LittleWhite-Hai/diff-viz.git"
   },
   "files": [
     "dist",

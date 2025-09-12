@@ -99,7 +99,7 @@ function applyAlign(
         if (rect1.height > rect2.height) {
           dom2.style.height = Math.round(rect1.height) + 'px';
           dom2.setAttribute('data-aligned-path', path);
-        } else {
+        } else if (rect1.height < rect2.height) {
           dom1.style.height = Math.round(rect2.height) + 'px';
           dom1.setAttribute('data-aligned-path', path);
         }
